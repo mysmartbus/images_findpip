@@ -1,0 +1,30 @@
+select.select() waiting...
+Entered _acceptNewConnection()
+Connection accepted from 10.255.0.2:48846
+Returned to run()
+select.select() waiting...
+Entered _receive()
+Received URL: http://www.kraven.rat/receipes/test_images/20171230_0905_Black_Background.png
+Returned to run()
+Entered _processImage()
+Entered _extCheck()
+Returned to _processImage()
+Image loaded.
+Image copied and resized.
+Grayscale image created
+Number of contours: 7
+Loop: 0
+Loop: 1
+Entered _transform()
+Returned to _processImage()
+Loop: 2
+Loop: 3
+Entered _transform()
+Returned to _processImage()
+Loop: 4
+Loop: 5
+Entered _transform()
+Returned to _processImage()
+Loop: 6
+Entered _send()
+.tar.gz file - /tmp/tmpt65zj7na.tar.gz
