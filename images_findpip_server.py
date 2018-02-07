@@ -697,7 +697,7 @@ class ServerObject:
 
                 with open(clientdata[1]+'/debug.txt', 'a') as f:
 
-                    if debugmode and len(self.debuglog) > 0:
+                    if self.debugmode and len(self.debuglog) > 0:
                         # Save debug logs generated this file was available for writing
                         for d in self.debuglog:
                             f.write(str(d)+"\n")

@@ -1,16 +1,16 @@
 # images_findpip
 
-Finds pictures in pictures.
-
-images_findpip.py is a python 3 script that can run as is, as a Docker container ([docker run](https://docs.docker.com/engine/reference/run/)), or as a Docker service ([docker service create](https://docs.docker.com/engine/reference/commandline/service_create/)).
+images_findpip_server.py is a python 3 script that can run as is, as a Docker container ([docker run](https://docs.docker.com/engine/reference/run/)), or as a Docker service ([docker service create](https://docs.docker.com/engine/reference/commandline/service_create/)).
 
 Except for the special urls listed below, all output from this script must be redirected into a .tar.gz file. See the usage examples on how to redirect the output into a .tar.gz file.
 
-## Requirements
+The server listens on port 6003.
+
+# Requirements
 
 Currently, all files to be processed by this script must be on a web server or ftp server.
 
-### Running Standalone
+# Running Standalone
 
 You will need to install [opencv](http://www.opencv.org) 3.4.0, python-numpy, python-scipy and a bunch of other packages. Use the opencv_install.sh file to install opencv 3.4.0 and python3.5.
 
@@ -18,23 +18,41 @@ The package manager used by opencv_install.sh is apt-get which limits the script
 
 After opencv has been successfully installed, simply run `python3.5 ./images_findpip.py`.
 
-### Running In A Docker Container
+# Running With Docker
 
-You will need to [install Docker](https://docs.docker.com/engine/installation/) on at least one computer.
+Install Docker-ce on a Raspberry Pi with a single command by using their handy install script.
 
-Once Docker has been installed, you can then build the Docker container and run it.
+`curl -sSL https://get.docker.com | sh`
 
-To build the container, run `docker build -t images_findpip .` in the folder that you downloaded the contents of this repository to. When the build is finished, you can start the container with `docker run -d -p 6003:6003 --network=host --name images_findpip images_findpip`
+The above command should also work on most linux based computers. To install on Mac or Windows, visit https://docs.docker.com/install/.
 
-### Running As A Docker Service
+Once Docker has been installed, you can then clone this repository, build the Docker image if desired, and run it as a container or service.
 
-You will need to [install Docker](https://docs.docker.com/engine/installation/) on at least two computers.
+## Building the Image
 
-Once Docker has been installed on the computers, you can then build the Docker container and run it.
+A pre-built image is availabe on hub.docker.com so that you do not need to build the image before using it.
 
-To build the container, run `docker build -t images_findpip .` in the folder that you downloaded the contents of this repository to. When the build is finished, you can start the container with `docker service create --replicas 2 --publish published=6003,target=6003 --name images_findpip images_findpip`
+To build the image, run `docker build -t images_findpip .` in the folder that you downloaded the contents of this repository to.
 
-## Options
+## Running In A Docker Container
+
+If you built the image use:  
+`docker run -d -p 6003:6003 --network=host --name images_findpip images_findpip`
+
+To use the prebuilt image:  
+`docker run -d -p 6003:6003 --network=host --name images_findpip mysmartbus/images_findpip`
+
+## Running As A Docker Service
+
+If you built the image use:  
+`docker service create --publish published=6003,target=6003 --name images_findpip images_findpip`
+
+To use the prebuilt image:  
+`docker service create --publish published=6003,target=6003 --name images_findpip mysmartbus/images_findpip`
+
+On a Raspberry Pi 2, using the prebuilt image took a little under 30 minutes to download and start.
+
+# Options
 
 There are three options that can be passed to the script to affect the data it returns. Note that the options reset to default values between calls to the script.
 
@@ -44,11 +62,13 @@ Example: debugfileon***returncolor
 
 These options will be ignored if using one of the special urls listed below.
 
-### debugmodeoff
+## debugmodeoff
 
 This option will turn off ALL debugging output. No data will be printed to the console or log file.
 
-The script default is to turn debug mode on.
+The script default is to turn debug mode on and send the output to the console.
+
+You can view this output by running `docker attach images_findpip` if you started a container or by running `docker logs images_findpip` if you started a service.
 
 ### debugfileon
 
@@ -62,9 +82,11 @@ If turned on, the pictures found by the script will be in color if the source im
 
 Script default is to return grayscale (a.k.a black & white) pictures even if the source image is in color.
 
+Has no effect if the source image is in grayscale.
+
 ## Special URLs
 
-Special URLs allow the client to retrieve a help/description file and the scripts version number. You do not need to redirect the scripts output when using these special URLs.
+Special URLs allow the client to retrieve a help/description file and the scripts version number. You do not need to redirect the output of these URLs unless you want to save the output to a text file.
 
 http://helpme  
 Returns a text file containing instructions on how to use this script and the scripts version number.

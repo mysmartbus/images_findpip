@@ -2,7 +2,7 @@
 
 Two examples to demonstrate what the script does.
 
-Both examples use the same set of receipe cards but use a different sheet of paper for the black background
+Both examples use the same set of receipe cards but use a different sheet of paper for the black background.
 
 For best results, use a contrasting background color. In the examples below, I used a black background because the receipe cards are white.
 

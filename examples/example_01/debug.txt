@@ -1,0 +1,34 @@
+images_findpip Server v0.24.3
+Initializing server...
+Host: dockermanager01.rat
+Port: 6003
+Server ready.
+Entered run()
+select.select() waiting...
+Entered _acceptNewConnection()
+Connection accepted from 192.168.17.10:58352
+Returned to run()
+select.select() waiting...
+Entered _receive()
+Entered _parseData()
+Parsed URL: http://www.kraven.rat/receipes/test_images/20171227_1726_Black_Background.png
+Returned to _receive()
+Returned to run()
+Entered _processImage()
+Entered _extCheck()
+Returned to _processImage()
+Image loaded.
+Image copied and resized.
+Grayscale image created
+Number of contours: 5
+Loop: 0
+Loop: 1
+Entered _transform()
+Returned to _processImage()
+Loop: 2
+Loop: 3
+Entered _transform()
+Returned to _processImage()
+Loop: 4
+Entered _send()
+.tar.gz file - /tmp/tmp4vq9atc2.tar.gz
