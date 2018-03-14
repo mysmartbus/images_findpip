@@ -3,11 +3,10 @@
 # Python 3.6 version of the script
 #
 # Created: 2018-01-02
-# Modified: 2018-01-18 1757
+# Modified: 2018-03-03 2313
 ##########
 
 # Python built-in modules
-import sys
 import math
 import numpy as np
 import os
@@ -17,8 +16,9 @@ import shutil
 import socket
 import tarfile
 import tempfile
-import urllib.request
 import urllib.error
+import urllib.parse
+import urllib.request
 
 import cv2
 
@@ -27,7 +27,7 @@ class ServerObject:
     def __init__(self):
 
         # Server version
-        self.serverversion = '0.24.3'
+        self.serverversion = '0.24.6'
 
         # Enable/Disable debug mode
         # True = Write debug info to the console and possibly to debug.txt
@@ -70,6 +70,7 @@ class ServerObject:
         # Using a list makes it easy to add/remove client connection info
         self.socklist = [self.srvsock]
 
+        # This lets the server know it has received all of the data from the client
         self._endmarker = '~~~'
 
         if self.debugmode:
@@ -189,15 +190,13 @@ class ServerObject:
         if self.debugmode:
             self._writeToDebugFile("Entered _processImage()", clientdata)
 
-        # Get file name from URL
-        fname = url.split('/')[-1:][0]
+        # Filename and extension of source image
+        fname, ext = self._extCheck(url, clientdata)
 
         # Full path to source image
-        srcimage = clientdata[1] + '/srcimage_' + fname
+        srcimage = clientdata[1] + '/srcimage_' + fname + '.' + ext
 
         clientdata.append(srcimage)
-
-        fname, ext = self._extCheck(fname, clientdata)
 
         if not ext:
             # Invalid extension
@@ -206,7 +205,19 @@ class ServerObject:
         if self.debugmode:
             self._writeToDebugFile("Returned to _processImage()", clientdata)
 
-        req = urllib.request.Request(url)
+        url = url + urllib.parse.quote(fname)
+        print("url: {}".format(url))
+
+        try:
+            req = urllib.request.Request(url)
+
+        except ValueError as e:
+
+            # So far, the only thing that has generated a ValueError
+            msg = "Unknown URL type.\n\nURL: {}".format(url)
+
+            self._writeToErrorFile(msg, clientdata)
+            return self._send(clientdata)
 
         try:
             # Download the image to memory
@@ -271,8 +282,9 @@ class ServerObject:
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
         if self.debugmode:
-            # Save the grayscale version to disk so it will be included
+            # Save the grayscale version to disk
             grayfilename = clientdata[1] + "/"+ fname + "_grayscale." + ext
+
             try:
                 cv2.imwrite(grayfilename, gray)
             except Exception as e:
@@ -568,7 +580,7 @@ class ServerObject:
                 f.write("\n\nDescription:\n")
                 f.write("    Given an image, tries to find all of the pictures within that image.")
                 f.write("\n\nUsage:\n")
-                f.write("    curl -d \"<image_url>\" http://<openfaas_ip>:8080/function/images_findpip > ~/results.tar.gz")
+                f.write("    curl -d \"<image_url>\" http://{}:{} > ~/results.tar.gz".format(socket.gethostname(), self.port))
                 f.write("\n\nReturns:\n")
                 f.write("    The returned data is a gz file (.tar.gz). To save the data, you will need to use a redirect (>).")
                 f.write("\n    Without the redirect, your screen will fill up with random characters.")
@@ -822,6 +834,15 @@ if __name__ == '__main__':
 
 ##########
 # Change Log:
+#
+# 0.24.6 (2018-03-04):
+#       Removed duplicated filename splitting in function _processImage()
+#
+# 0.24.5 (2018-03-04):
+#       Can now handle URLs with spaces
+#
+# 0.24.4 (2018-03-03):
+#       Fixed incorrect URL in usage example
 #
 # 0.24.3 (2018-01-20):
 #       Added function _parseData()
